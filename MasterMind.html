@@ -1,7 +1,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=Windows-31J"/>
-<title>�}�X�^�[�}�C���h�����</title>
+<title>MasterMind相手役</title>
 <script type="text/javascript">
 var gPgmQ = "";
 var gaChar = new Array
@@ -35,7 +35,7 @@ var STATUS_FIND_NUMBER_ERROR = -3;
 
 var RET_ERROR = -1;
 
-// ���s���Z�b�g
+// 勝敗リセット
 function K_PlayReset()
 {
 	document.forms[0].win.value = "0";
@@ -43,20 +43,20 @@ function K_PlayReset()
 	document.forms[0].draw.value = "0";
 }
 
-// ���s����
+// 勝敗判定
 function K_Judge()
 {
 	var aPgmTry;
 	var aYouTry;
 	var Loop;
 	
-	// �e���s����
+	// 各試行が空か
 	if ((document.forms[0].pgm_try.value == "") || (document.forms[0].you_try.value == ""))
 	{
 		return "NOT_END";
 	}
 	aPgmTry = document.forms[0].pgm_try.value.split("\n");
-	// �ŐV���s�T�����[�v
+	// 最新試行探索ループ
 	for (Loop = aPgmTry.length - 1; Loop >= 0; Loop--)
 	{
 		if (aPgmTry[Loop].length == 20)
@@ -65,61 +65,61 @@ function K_Judge()
 		}
 	}
 	aYouTry = document.forms[0].you_try.value.split("\n");
-	// ���s�����Ă��Ȃ���
+	// 勝敗がついていないか
 	if ((aPgmTry[Loop].charAt(8) != "4") && (aYouTry[Loop].charAt(8) != "4"))
 	{
 		return "NOT_END";
 	}
-	// ����������
+	// 引き分けか
 	if ((aPgmTry[Loop].charAt(8) == "4") && (aYouTry[Loop].charAt(8) == "4"))
 	{
 		return "DRAW";
 	}
-	// �v���C���̏�����
+	// プレイヤの勝ちか
 	if (aYouTry[Loop].charAt(8) == "4")
 	{
 		return "YOU";
 	}
-	// �v���O�����̏����̏ꍇ�ɓ��B
+	// プログラムの勝ちの場合に到達
 	return "PGM";
 }
 
-// ���Q�[���J�n
+// 次ゲーム開始
 function K_PlayNext()
 {
 	var Ret;
 	
-	// �O�Q�[�������邩
+	// 前ゲームがあるか
 	if (gPgmQ != "")
 	{
-		// �v���C���̖�肪���͂���Ă��邩
+		// プレイヤの問題が入力されているか
 		if (document.forms[0].you_q.value != "")
 		{
 			Ret = K_VerifyYouHint();
-			// �ԈႢ�����邩
+			// 間違いがあるか
 			if (Ret == "BAD")
 			{
-				alert("�v���C���̃q���g�ɊԈႢ�����邽�ߖ����Q�[���ƂȂ�܂��B");
+				alert("プレイヤのヒントに間違いがあるため無効ゲームとなります。");
 			}
 		}
 		else
 		{
-			alert("�O�Q�[���̃v���C���̃q���g�̌��؂��s�����߁A�v���C���̏o�����͂��ĉ������B");
+			alert("前ゲームのプレイヤのヒントの検証を行うため、プレイヤの出題を入力して下さい。");
 			return;
 		}
-		// �q���g�ԈႢ���Ȃ���
+		// ヒント間違いがないか
 		if (Ret != "BAD")
 		{
-			// ��������
+			// 履歴検証
 			Ret = K_Judge();
 		}
-		// ����ŕ���
+		// 判定で分岐
 		switch (Ret)
 		{
 			case "NOT_END":
 			{
-				// �����Q�[���m�F&�L�����Z������
-				if (!confirm("���s�����Ă��Ȃ����߁A�����Q�[���ƂȂ�܂����悢�ł����H"))
+				// 無効ゲーム確認&キャンセル押下
+				if (!confirm("勝敗がついていないため、無効ゲームとなりますがよいですか？"))
 				{
 					return;
 				}
@@ -146,7 +146,7 @@ function K_PlayNext()
 			}
 			default:
 			{
-				alert("�G���[���������܂����B");
+				alert("エラーが発生しました。");
 				return;
 			}
 		}
@@ -165,7 +165,7 @@ if (gDebug == "true")
 	document.forms[0].pgm_expect.value = K_PgmExpect();
 }
 
-// �\���N���A
+// 表示クリア
 function K_ClearView()
 {
 	document.forms[0].you_hint_hit.value = "";
@@ -180,7 +180,7 @@ function K_ClearView()
 	document.forms[0].pgm_q.value = "";
 }
 
-// �\�z�e�[�u���쐬
+// 予想テーブル作成
 function K_MakeExpectTable()
 {
 	var aTable;
@@ -188,13 +188,13 @@ function K_MakeExpectTable()
 	var Idx;
 	
 	gaExpect = new Array();
-	// �\�z�e�[�u�����w�肳��Ă��邩
+	// 予想テーブルが指定されているか
 	if (document.forms[0].expect_table.value != "")
 	{
-		// �w����̗p���邩�m�F
-		if (confirm("�\�z�e�[�u���̎w����g�p���܂����H"))
+		// 指定を採用するか確認
+		if (confirm("予想テーブルの指定を使用しますか？"))
 		{
-			// �ݒ胋�[�v
+			// 設定ループ
 			for (Loop = 0; Loop < 10; Loop++)
 			{
 				gaExpect.push(document.forms[0].expect_table.value.charAt(Loop * 2));
@@ -207,7 +207,7 @@ function K_MakeExpectTable()
 	{
 		Idx = Math.floor(Math.random() * (10 - Loop));
 		gaExpect.push(aTable[Idx]);
-		// �ő�l�ł͂Ȃ���
+		// 最大値ではないか
 		if (Idx != 9 - Loop)
 		{
 			aTable[Idx] = aTable[9 - Loop];
@@ -221,7 +221,7 @@ if (gDebug)
 }
 }
 
-// ���쐬
+// 問題作成
 function K_PgmQ()
 {
 	var Loop;
@@ -230,12 +230,12 @@ function K_PgmQ()
 	
 	gPgmQ = "";
 	aTable = gaChar.join(",").split(",");
-	// ���쐬���[�v
+	// 問題作成ループ
 	for (Loop = 0; Loop < 4; Loop++)
 	{
 		Idx = Math.floor(Math.random() * (10 - Loop));
 		gPgmQ += aTable[Idx];
-		// �ő�l�ł͂Ȃ���
+		// 最大値ではないか
 		if (Idx != 9 - Loop)
 		{
 			aTable[Idx] = aTable[9 - Loop];
@@ -243,7 +243,7 @@ function K_PgmQ()
 	}
 }
 
-// �����s
+// 次試行
 function K_Try()
 {
 	var Ret;
@@ -252,7 +252,7 @@ function K_Try()
 	
 	RetHint = K_PgmHint(gPgmQ, document.forms[0].you_expect.value);
 	Ret = K_CheckInput();
-	// ��ԕ���
+	// 状態分岐
 	switch (Ret)
 	{
 		case 0:
@@ -265,52 +265,52 @@ function K_Try()
 		}
 		default:
 		{
-			// �Q�[�����I������΂��肩
+			// ゲームが終わったばかりか
 			if (gPlayEnd == "false")
 			{
-				// ���s�ǋL
+				// 試行追記
 				document.forms[0].pgm_try.value += document.forms[0].pgm_expect.value + " -> " + document.forms[0].you_hint_hit.value + " Hit " + document.forms[0].you_hint_blow.value + " Blow\n";
 				document.forms[0].you_try.value += document.forms[0].you_expect.value.toUpperCase() + " -> " + RetHint.Hit + " Hit " + RetHint.Blow + " Blow\n";
 				document.forms[0].pgm_q.value = gPgmQ;
 			}
 			gPlayEnd = "true";
-			alert("���s�����܂����B");
+			alert("勝敗がつきました。");
 			return;
 		}
 	}
-	// �v���C������������
+	// プレイヤが勝ったか
 	if (RetHint.Hit == 4)
 	{
-		// �Q�[�����I������΂��肩
+		// ゲームが終わったばかりか
 		if (gPlayEnd == "false")
 		{
-			// ���s�ǋL
+			// 試行追記
 			document.forms[0].pgm_try.value += document.forms[0].pgm_expect.value + " -> " + document.forms[0].you_hint_hit.value + " Hit " + document.forms[0].you_hint_blow.value + " Blow\n";
 			document.forms[0].you_try.value += document.forms[0].you_expect.value.toUpperCase() + " -> " + RetHint.Hit + " Hit " + RetHint.Blow + " Blow\n";
 			document.forms[0].pgm_q.value = gPgmQ;
 		}
 		gPlayEnd = "true";
-		alert("���s�����܂����B");
+		alert("勝敗がつきました。");
 		return;
 	}
 	Tmp = document.forms[0].pgm_try.value;
-	// ���s�ǋL
+	// 試行追記
 	document.forms[0].pgm_try.value += document.forms[0].pgm_expect.value + " -> " + document.forms[0].you_hint_hit.value + " Hit " + document.forms[0].you_hint_blow.value + " Blow\n";
-	// �����s�m�F
-	if (!confirm("���̎��s�Ɉڂ��Ă��悢�ł����H"))
+	// 次試行確認
+	if (!confirm("次の試行に移ってもよいですか？"))
 	{
 		document.forms[0].pgm_try.value = Tmp;
 		return;
 	}
 	Ret = K_PgmExpect();
-	// �G���[������
+	// エラー発生か
 	if (Ret == RET_ERROR)
 	{
-		alert("�G���[���������܂����B");
+		alert("エラーが発生しました。");
 		return;
 	}
 	document.forms[0].pgm_expect.value = Ret;
-	// ���s�ǋL
+	// 試行追記
 	//document.forms[0].you_try.value += document.forms[0].you_expect.value.toUpperCase() + " -> " + document.forms[0].pgm_hint_hit.value + " HIT " + document.forms[0].pgm_hint_blow.value + " BLOW\n";
 	document.forms[0].you_try.value += document.forms[0].you_expect.value.toUpperCase() + " -> " + RetHint.Hit + " Hit " + RetHint.Blow + " Blow\n";
 	document.forms[0].you_hint_hit.value = "";
@@ -318,20 +318,20 @@ function K_Try()
 	document.forms[0].you_expect.value = "";
 }
 
-// ���̓`�F�b�N
+// 入力チェック
 function K_CheckInput()
 {
 	var Idx;
 	var Tmp;
 	var Upper;
 
-	// �v���C���[�̃q���g�����͂���Ă��Ȃ���
+	// プレイヤーのヒントが入力されていないか
 	if ((document.forms[0].you_hint_hit.value == "") || (document.forms[0].you_hint_blow.value == ""))
 	{
-		alert("�v���C���[�̃q���g�����͂���Ă��܂���B");
+		alert("プレイヤーのヒントが入力されていません。");
 		return 0;
 	}
-	// �v���C���[�̃q���g�̃q�b�g�̑Ó�������
+	// プレイヤーのヒントのヒットの妥当性分岐
 	switch (document.forms[0].you_hint_hit.value)
 	{
 		case "0":
@@ -356,11 +356,11 @@ function K_CheckInput()
 		}
 		default:
 		{
-			alert("�v���C���[�̃q���g���Ԉ���Ă��܂��B�q���g��'0'�A'1'�A'2'�A'3'�A'4'�̂����ꂩ����͂��ĉ������B");
+			alert("プレイヤーのヒントが間違っています。ヒントは'0'、'1'、'2'、'3'、'4'のいずれかを入力して下さい。");
 			return 0;
 		}
 	}
-	// �v���C���[�̃q���g�̃u���[�̑Ó�������
+	// プレイヤーのヒントのブローの妥当性分岐
 	switch (document.forms[0].you_hint_blow.value)
 	{
 		case "0":
@@ -385,37 +385,37 @@ function K_CheckInput()
 		}
 		default:
 		{
-			alert("�v���C���[�̃q���g���Ԉ���Ă��܂��B�q���g��'0'�A'1'�A'2'�A'3'�A'4'�̂����ꂩ����͂��ĉ������B");
+			alert("プレイヤーのヒントが間違っています。ヒントは'0'、'1'、'2'、'3'、'4'のいずれかを入力して下さい。");
 			return 0;
 		}
 	}
-	// �v���C���[�̗\�z���S�����ł͂Ȃ���
+	// プレイヤーの予想が４文字ではないか
 	if (document.forms[0].you_expect.value.length != 4)
 	{
-		alert("�v���C���[�̗\�z�͂S�����Ŏw�肵�ĉ������B");
+		alert("プレイヤーの予想は４文字で指定して下さい。");
 		return 0;
 	}
 	Upper = document.forms[0].you_expect.value.toUpperCase();
-	//�@�P�����ڂƓ������������邩
+	//　１文字目と同じ文字があるか
 	if ((Upper.charAt(0) == Upper.charAt(1)) || (Upper.charAt(0) == Upper.charAt(2)) || (Upper.charAt(0) == Upper.charAt(3)))
 	{
-		alert("�v���C���[�̗\�z�ɕ����̏d��������܂��B");
+		alert("プレイヤーの予想に文字の重複があります。");
 		return 0;
 	}
-	//�@�Q�����ڂƓ������������邩
+	//　２文字目と同じ文字があるか
 	if ((Upper.charAt(1) == Upper.charAt(2)) || (Upper.charAt(1) == Upper.charAt(3)))
 	{
-		alert("�v���C���[�̗\�z�ɕ����̏d��������܂��B");
+		alert("プレイヤーの予想に文字の重複があります。");
 		return 0;
 	}
-	//�@�R�����ڂƓ������������邩
+	//　３文字目と同じ文字があるか
 	if (Upper.charAt(2) == Upper.charAt(3))
 	{
-		alert("�v���C���[�̗\�z�ɕ����̏d��������܂��B");
+		alert("プレイヤーの予想に文字の重複があります。");
 		return 0;
 	}
 	Tmp = gaChar.join(",");
-	// �����ȕ������w�肳��Ă��邩
+	// 無効な文字が指定されているか
 	for (Idx = 0; Idx < 4; Idx++)
 	{
 		if ((Tmp.indexOf(document.forms[0].you_expect.value.charAt(Idx).toUpperCase()) == -1) || (document.forms[0].you_expect.value.charAt(Idx) == ","))
@@ -426,7 +426,7 @@ function K_CheckInput()
 	return 1;
 }
 
-// �v���O�����̃q���g
+// プログラムのヒント
 function K_PgmHint(question, expect)
 {
 	var Question;
@@ -438,42 +438,42 @@ function K_PgmHint(question, expect)
 	Ret = new K_Hint();
 	Ret.Hit = 0;
 	Ret.Blow = 0;
-	// �P�����ڂ���v���Ă��邩
+	// １文字目が一致しているか
 	if (Question.charAt(0) == Expect.charAt(0))
 	{
 		Ret.Hit++;
 	}
-	// �Q�����ڂ���v���Ă��邩
+	// ２文字目が一致しているか
 	if (Question.charAt(1) == Expect.charAt(1))
 	{
 		Ret.Hit++;
 	}
-	// �R�����ڂ���v���Ă��邩
+	// ３文字目が一致しているか
 	if (Question.charAt(2) == Expect.charAt(2))
 	{
 		Ret.Hit++;
 	}
-	// �S�����ڂ���v���Ă��邩
+	// ４文字目が一致しているか
 	if (Question.charAt(3) == Expect.charAt(3))
 	{
 		Ret.Hit++;
 	}
-	// �P�����ڂ��ǂ����ɂ��邩
+	// １文字目がどこかにあるか
 	if ((Expect.charAt(0) == Question.charAt(1)) || (Expect.charAt(0) == Question.charAt(2)) || (Expect.charAt(0) == Question.charAt(3)))
 	{
 		Ret.Blow++;
 	}
-	// �Q�����ڂ��ǂ����ɂ��邩
+	// ２文字目がどこかにあるか
 	if ((Expect.charAt(1) == Question.charAt(0)) || (Expect.charAt(1) == Question.charAt(2)) || (Expect.charAt(1) == Question.charAt(3)))
 	{
 		Ret.Blow++;
 	}
-	// �R�����ڂ��ǂ����ɂ��邩
+	// ３文字目がどこかにあるか
 	if ((Expect.charAt(2) == Question.charAt(0)) || (Expect.charAt(2) == Question.charAt(1)) || (Expect.charAt(2) == Question.charAt(3)))
 	{
 		Ret.Blow++;
 	}
-	// �S�����ڂ��ǂ����ɂ��邩
+	// ４文字目がどこかにあるか
 	if ((Expect.charAt(3) == Question.charAt(0)) || (Expect.charAt(3) == Question.charAt(1)) || (Expect.charAt(3) == Question.charAt(2)))
 	{
 		Ret.Blow++;
@@ -481,19 +481,19 @@ function K_PgmHint(question, expect)
 	return Ret;
 }
 
-// �v���O�����̗\�z
+// プログラムの予想
 function K_PgmExpect()
 {
 	var Ret;
 	
 	K_GetHistory();
 	Ret = "";
-	// ��ޒT�����I����Ă��Ȃ���
+	// 種類探索が終わっていないか
 	if (gNumber.length < 4)
 	{
 		gNumber = "";
 		Ret = K_FindNumber();
-		// ��ޒT���̏�ԕ���
+		// 種類探索の状態分岐
 		switch (Ret)
 		{
 			case STATUS_FIND_NUMBER_END:
@@ -515,14 +515,14 @@ function K_PgmExpect()
 	return Ret;
 }
 
-// �q���g�m�F
+// ヒント確認
 function K_GetHint(expect)
 {
 	var Loop;
 	
-	// �߂�l�m��
+	// 戻り値確保
 	Ret = new K_Hint();
-	// ����T�����[�v
+	// 履歴探索ループ
 	for (Loop = 0; Loop < gaHistory.length; Loop++)
 	{
 		if (gaHistory[Loop].substr(0, 4) == expect)
@@ -535,14 +535,14 @@ function K_GetHint(expect)
 	return;
 }
 
-// �q���g�I�u�W�F�N�g�R���X�g���N�^
+// ヒントオブジェクトコンストラクタ
 function K_Hint()
 {
 	this.Hit = -1;
 	this.Blow = -1;
 }
 
-// �ʒu����
+// 位置特定
 function K_FindPosition()
 {
 	var Hit;
@@ -553,19 +553,19 @@ function K_FindPosition()
 	var Limit;
 	var Expect;
 	
-	// ��ޒT�����I����Ă��Ȃ���
+	// 種類探索が終わっていないか
 	if (gNumber.length != 4)
 	{
 		return RET_ERROR;
 	}
-	// �ʒu�q���g�̒������S�ł͂Ȃ���
+	// 位置ヒントの長さが４ではないか
 	if (gPosition.length != 4)
 	{
 		return RET_ERROR;
 	}
-	// ���\�z�쐬
+	// 次予想作成
 	Expect = gPosition;
-	// �ʒu�q���g���ݗ\�z�쐬���[�v�i��ސ����S�Ă��ʒu�����Ŏg�p�j
+	// 位置ヒント込み予想作成ループ（種類正順全てを位置正順で使用）
 	for (IdxA = 0; IdxA < 4; IdxA++)
 	{
 		if (Expect.indexOf(gNumber.charAt(IdxA)) == -1)
@@ -573,14 +573,14 @@ function K_FindPosition()
 			Expect = Expect.substr(0, Expect.indexOf("-")) + gNumber.charAt(IdxA) + Expect.substr(Expect.indexOf("-") + 1);
 		}
 	}
-	// �q���g�m�F
+	// ヒント確認
 	Ret = K_GetHint(Expect);
-	// �q���g���Ȃ�������
+	// ヒントがなかったか
 	if (Ret == undefined)
 	{
 		return Expect;
 	}
-	// �ʒu�q���g���J�E���g
+	// 位置ヒント数カウント
 	for (CntPosition = 0, IdxA = 0; IdxA < 4; IdxA++)
 	{
 		if (gPosition.charAt(IdxA) != "-")
@@ -588,10 +588,10 @@ function K_FindPosition()
 			CntPosition++;
 		}
 	}
-	// �s�v���̎悩
+	// 不要未採取か
 	if (gNeedLess == "")
 	{
-		// �s�v�̎惋�[�v
+		// 不要採取ループ
 		for (IdxA = 0; IdxA < 10; IdxA++)
 		{
 			if (gNumber.indexOf(gaExpect[IdxA]) == -1)
@@ -604,49 +604,49 @@ function K_FindPosition()
 			}
 		}
 	}
-	// Hit���ŕ���
+	// Hit数で分岐
 	switch (Ret.Hit)
 	{
 		case "0":
 		{
-			// ���\�z�쐬
+			// 次予想作成
 			Expect = gNumber.charAt(0) + gNeedLess;
-			// �q���g�m�F
+			// ヒント確認
 			Ret = K_GetHint(Expect);
-			// �q���g���Ȃ�������
+			// ヒントがなかったか
 			if (Ret == undefined)
 			{
 				return Expect;
 			}
-			// Hit���ŕ���
+			// Hit数で分岐
 			switch (Ret.Hit)
 			{
 				case "0":
 				{
-					// ���\�z�쐬
+					// 次予想作成
 					Expect = gNumber.charAt(1) + gNeedLess;
-					// �q���g�m�F
+					// ヒント確認
 					Ret = K_GetHint(Expect);
-					// �q���g���Ȃ�������
+					// ヒントがなかったか
 					if (Ret == undefined)
 					{
 						return Expect;
 					}
-					// Hit���ŕ���
+					// Hit数で分岐
 					switch (Ret.Hit)
 					{
 						case "0":
 						{
-							// ���\�z�쐬
+							// 次予想作成
 							Expect = gNumber.charAt(2) + gNeedLess;
-							// �q���g�m�F
+							// ヒント確認
 							Ret = K_GetHint(Expect);
-							// �q���g���Ȃ�������
+							// ヒントがなかったか
 							if (Ret == undefined)
 							{
 								return Expect;
 							}
-							// Hit���ŕ���
+							// Hit数で分岐
 							switch (Ret.Hit)
 							{
 								case "0":
@@ -696,21 +696,21 @@ function K_FindPosition()
 		}
 		case "1":
 		{
-			// �ʒu�q���g���ŕ���
+			// 位置ヒント数で分岐
 			switch (CntPosition)
 			{
 				case 0:
 				{
-					// ���\�z�쐬
+					// 次予想作成
 					Expect = gNumber.substr(0, 3) + gNeedLess.charAt(1);
-					// �q���g�m�F
+					// ヒント確認
 					Ret = K_GetHint(Expect);
-					// �q���g���Ȃ�������
+					// ヒントがなかったか
 					if (Ret == undefined)
 					{
 						return Expect;
 					}
-					// Hit���ŕ���
+					// Hit数で分岐
 					switch (Ret.Hit)
 					{
 						case "0":
@@ -721,16 +721,16 @@ function K_FindPosition()
 						}
 						case "1":
 						{
-							// ���\�z�쐬
+							// 次予想作成
 							Expect = gNumber.substr(0, 2) + gNeedLess.charAt(1) + gNumber.substr(3);
-							// �q���g�m�F
+							// ヒント確認
 							Ret = K_GetHint(Expect);
-							// �q���g���Ȃ�������
+							// ヒントがなかったか
 							if (Ret == undefined)
 							{
 								return Expect;
 							}
-							// Hit���ŕ���
+							// Hit数で分岐
 							switch (Ret.Hit)
 							{
 								case "0":
@@ -741,16 +741,16 @@ function K_FindPosition()
 								}
 								case "1":
 								{
-									// ���\�z�쐬
+									// 次予想作成
 									Expect = gNumber.substr(0, 1) + gNeedLess.charAt(1) + gNumber.substr(2);
-									// �q���g�m�F
+									// ヒント確認
 									Ret = K_GetHint(Expect);
-									// �q���g���Ȃ�������
+									// ヒントがなかったか
 									if (Ret == undefined)
 									{
 										return Expect;
 									}
-									// Hit���ŕ���
+									// Hit数で分岐
 									switch (Ret.Hit)
 									{
 										case "0":
@@ -788,9 +788,9 @@ function K_FindPosition()
 				}
 				case 1:
 				{
-					// ���\�z�쐬
+					// 次予想作成
 					Expect = gPosition;
-					// �ʒu�q���g���ݗ\�z�쐬���[�v�i��ސ����P���ʒu�����Ŏg�p�j
+					// 位置ヒント込み予想作成ループ（種類正順１つを位置正順で使用）
 					for (IdxA = 0; IdxA < 4; IdxA++)
 					{
 						if (Expect.indexOf(gNumber.charAt(IdxA)) == -1)
@@ -801,22 +801,22 @@ function K_FindPosition()
 					}
 					Expect = Expect.substr(0, Expect.indexOf("-")) + gNeedLess.charAt(0) + Expect.substr(Expect.indexOf("-") + 1);
 					Expect = Expect.substr(0, Expect.indexOf("-")) + gNeedLess.charAt(1) + Expect.substr(Expect.indexOf("-") + 1);
-					// �q���g�m�F
+					// ヒント確認
 					Ret = K_GetHint(Expect);
-					// �q���g���Ȃ�������
+					// ヒントがなかったか
 					if (Ret == undefined)
 					{
 						return Expect;
 					}
-					// Hit���ŕ���
+					// Hit数で分岐
 					switch (Ret.Hit)
 					{
 						case "1":
 						{
-							// ���\�z�쐬
+							// 次予想作成
 							Expect = gPosition;
 							Limit = 0;
-							// �ʒu�q���g���ݗ\�z�쐬���[�v�i��ސ����Q���ʒu�����Ŏg�p�j
+							// 位置ヒント込み予想作成ループ（種類正順２つを位置正順で使用）
 							for (IdxA = 0; IdxA < 4; IdxA++)
 							{
 								if (Expect.indexOf(gNumber.charAt(IdxA)) == -1)
@@ -834,20 +834,20 @@ function K_FindPosition()
 							}
 							Expect = Expect.substr(0, Expect.indexOf("-")) + gNeedLess.charAt(0) + Expect.substr(Expect.indexOf("-") + 1);
 							Expect = Expect.substr(0, Expect.indexOf("-")) + gNeedLess.charAt(1) + Expect.substr(Expect.indexOf("-") + 1);
-							// �q���g�m�F
+							// ヒント確認
 							Ret = K_GetHint(Expect);
-							// �q���g���Ȃ�������
+							// ヒントがなかったか
 							if (Ret == undefined)
 							{
 								return Expect;
 							}
-							// Hit���ŕ���
+							// Hit数で分岐
 							switch (Ret.Hit)
 							{
 								case "1":
 								{
 									Limit = 0;
-									// Hit�ʒu�T�����[�v
+									// Hit位置探索ループ
 									for (IdxA = 0; IdxA < 4; IdxA++)
 									{
 										if (gPosition.indexOf(gNumber.charAt(IdxA)) == -1)
@@ -862,7 +862,7 @@ function K_FindPosition()
 											}
 										}
 									}
-									// ��������Ȃ���
+									// 数が足りないか
 									if (Limit != 2)
 									{
 										return RET_ERROR;
@@ -874,7 +874,7 @@ function K_FindPosition()
 								case "2":
 								{
 									Limit = 0;
-									// Hit�ʒu�T�����[�v
+									// Hit位置探索ループ
 									for (IdxA = 0; IdxA < 4; IdxA++)
 									{
 										if (gPosition.indexOf(gNumber.charAt(IdxA)) == -1)
@@ -889,7 +889,7 @@ function K_FindPosition()
 											}
 										}
 									}
-									// ��������Ȃ���
+									// 数が足りないか
 									if (Limit != 1)
 									{
 										return RET_ERROR;
@@ -907,7 +907,7 @@ function K_FindPosition()
 						}
 						case "2":
 						{
-							// Hit�ʒu�T�����[�v
+							// Hit位置探索ループ
 							for (IdxA = 0; IdxA < 4; IdxA++)
 							{
 								if (gPosition.indexOf(gNumber.charAt(IdxA)) == -1)
@@ -935,21 +935,21 @@ function K_FindPosition()
 		}
 		case "2":
 		{
-			// �ʒu�q���g���ŕ���
+			// 位置ヒント数で分岐
 			switch (CntPosition)
 			{
 				case 0:
 				{
-					// ���\�z�쐬
+					// 次予想作成
 					Expect = gNumber.substr(0, 3) + gNeedLess.charAt(0);
-					// �q���g�m�F
+					// ヒント確認
 					Ret = K_GetHint(Expect);
-					// �q���g���Ȃ�������
+					// ヒントがなかったか
 					if (Ret == undefined)
 					{
 						return Expect;
 					}
-					// Hit���ŕ���
+					// Hit数で分岐
 					switch (Ret.Hit)
 					{
 						case "1":
@@ -960,16 +960,16 @@ function K_FindPosition()
 						}
 						case "2":
 						{
-							// ���\�z�쐬
+							// 次予想作成
 							Expect = gNumber.substr(0, 2) + gNeedLess.charAt(0) + gNumber.substr(3);
-							// �q���g�m�F
+							// ヒント確認
 							Ret = K_GetHint(Expect);
-							// �q���g���Ȃ�������
+							// ヒントがなかったか
 							if (Ret == undefined)
 							{
 								return Expect;
 							}
-							// Hit���ŕ���
+							// Hit数で分岐
 							switch (Ret.Hit)
 							{
 								case "1":
@@ -980,16 +980,16 @@ function K_FindPosition()
 								}
 								case "2":
 								{
-									// ���\�z�쐬
+									// 次予想作成
 									Expect = gNumber.substr(0, 1) + gNeedLess.charAt(0) + gNumber.substr(2);
-									// �q���g�m�F
+									// ヒント確認
 									Ret = K_GetHint(Expect);
-									// �q���g���Ȃ�������
+									// ヒントがなかったか
 									if (Ret == undefined)
 									{
 										return Expect;
 									}
-									// Hit���ŕ���
+									// Hit数で分岐
 									switch (Ret.Hit)
 									{
 										case "1":
@@ -1027,9 +1027,9 @@ function K_FindPosition()
 				}
 				case 1:
 				{
-					// ���\�z�쐬
+					// 次予想作成
 					Expect = gPosition;
-					// �ʒu�q���g���ݗ\�z�쐬���[�v�i��ސ����P���ʒu�����Ŏg�p�j
+					// 位置ヒント込み予想作成ループ（種類正順１つを位置正順で使用）
 					for (IdxA = 0; IdxA < 4; IdxA++)
 					{
 						if (Expect.indexOf(gNumber.charAt(IdxA)) == -1)
@@ -1038,7 +1038,7 @@ function K_FindPosition()
 							break;
 						}
 					}
-					// �ʒu�q���g���ݗ\�z�쐬���[�v�i��ސ����Q���ʒu�t���Ŏg�p�j
+					// 位置ヒント込み予想作成ループ（種類正順２つを位置逆順で使用）
 					for (; IdxA < 4; IdxA++)
 					{
 						if (Expect.indexOf(gNumber.charAt(IdxA)) == -1)
@@ -1046,18 +1046,18 @@ function K_FindPosition()
 							Expect = Expect.substr(0, Expect.lastIndexOf("-")) + gNumber.charAt(IdxA) + Expect.substr(Expect.lastIndexOf("-") + 1);
 						}
 					}
-					// �q���g�m�F
+					// ヒント確認
 					Ret = K_GetHint(Expect);
-					// �q���g���Ȃ�������
+					// ヒントがなかったか
 					if (Ret == undefined)
 					{
 						return Expect;
 					}
-					// �QHit��
+					// ２Hitか
 					if (Ret.Hit == "2")
 					{
-						// �QHit�ł���
-						// �ʒu�q���g�X�V���[�v
+						// ２Hitである
+						// 位置ヒント更新ループ
 						for (IdxA = 0; IdxA < 4; IdxA++)
 						{
 							if (gPosition.indexOf(gNumber.charAt(IdxA)) == -1)
@@ -1070,10 +1070,10 @@ function K_FindPosition()
 					}
 					else
 					{
-						// �QHit�ł͂Ȃ�
-						// ���\�z�쐬
+						// ２Hitではない
+						// 次予想作成
 						Expect = gPosition;
-						// �ʒu�q���g���ݗ\�z�쐬���[�v�i��ދt���P���ʒu�t���Ŏg�p�j
+						// 位置ヒント込み予想作成ループ（種類逆順１つを位置逆順で使用）
 						for (IdxA = 3; IdxA >= 0; IdxA--)
 						{
 							if (Expect.indexOf(gNumber.charAt(IdxA)) == -1)
@@ -1082,7 +1082,7 @@ function K_FindPosition()
 								break;
 							}
 						}
-						// �ʒu�q���g���ݗ\�z�쐬���[�v�i��ސ����Q���ʒu�����Ŏg�p�j
+						// 位置ヒント込み予想作成ループ（種類正順２つを位置正順で使用）
 						for (IdxA = 0; IdxA < 4; IdxA++)
 						{
 							if (Expect.indexOf(gNumber.charAt(IdxA)) == -1)
@@ -1090,19 +1090,19 @@ function K_FindPosition()
 								Expect = Expect.substr(0, Expect.indexOf("-")) + gNumber.charAt(IdxA) + Expect.substr(Expect.indexOf("-") + 1);
 							}
 						}
-						// �q���g�m�F
+						// ヒント確認
 						Ret = K_GetHint(Expect);
-						// �q���g���Ȃ�������
+						// ヒントがなかったか
 						if (Ret == undefined)
 						{
 							return Expect;
 						}
-						// �QHit��
+						// ２Hitか
 						if (Ret.Hit)
 						{
-							// �QHit�ł���
+							// ２Hitである
 							Limit = 0;
-							// �ʒu�q���g�X�V���[�v
+							// 位置ヒント更新ループ
 							for (IdxA = 0; IdxA < 4; IdxA++)
 							{
 								if (gPosition.indexOf(gNumber.charAt(IdxA)) == -1)
@@ -1122,9 +1122,9 @@ function K_FindPosition()
 						}
 						else
 						{
-							// �QHit�ł͂Ȃ�
+							// ２Hitではない
 							Limit = 0;
-							// �ʒu�q���g�X�V���[�v
+							// 位置ヒント更新ループ
 							for (IdxA = 0; IdxA < 4; IdxA++)
 							{
 								if (gPosition.indexOf(gNumber.charAt(IdxA)) == -1)
@@ -1147,9 +1147,9 @@ function K_FindPosition()
 				}
 				case 2:
 				{
-					// ���\�z�쐬
+					// 次予想作成
 					Expect = gPosition;
-					// �ʒu�q���g���ݗ\�z�쐬���[�v�i��ދt���Q���ʒu�����Ŏg�p�j
+					// 位置ヒント込み予想作成ループ（種類逆順２つを位置正順で使用）
 					for (IdxA = 3; IdxA >= 0; IdxA--)
 					{
 						if (Expect.indexOf(gNumber.charAt(IdxA)) == -1)
@@ -1175,7 +1175,7 @@ function K_FindPosition()
 	return Ret;
 }
 
-// �����擾
+// 履歴取得
 function K_GetHistory()
 {
 	var Loop;
@@ -1183,7 +1183,7 @@ function K_GetHistory()
 	gaHistory = document.forms[0].pgm_try.value.split("\n");
 	for (Loop = gaHistory.length - 1; Loop >= 0; Loop--)
 	{
-		// ���̂����邩
+		// 実体があるか
 		if (gaHistory[Loop].length == 20)
 		{
 			break;
@@ -1193,7 +1193,7 @@ function K_GetHistory()
 	gIdxHistory = 0;
 }
 
-// ��ޒT��
+// 種類探索
 function K_FindNumber()
 {
 	var TotalA;
@@ -1205,7 +1205,7 @@ function K_FindNumber()
 	var HitB;
 	var Blow;
 	
-	// �������Ȃ���
+	// 履歴がないか
 	if (gIdxHistory >= gaHistory.length)
 	{
 		return gaExpect[0] + gaExpect[1] + gaExpect[2] + gaExpect[3];
@@ -1214,21 +1214,21 @@ function K_FindNumber()
 	Blow = gaHistory[gIdxHistory].charAt(14);
 	TotalF = Hit * 1 + Blow * 1;
 	gIdxHistory++;
-	// ��ޒT�����I�������
+	// 種類探索が終わったか
 	if (TotalF >= 4)
 	{
 		gNumber += gaExpect[0] + "";
 		gNumber += gaExpect[1] + "";
 		gNumber += gaExpect[2] + "";
 		gNumber += gaExpect[3] + "";
-		// �ʒu�q���g�����邩
+		// 位置ヒントもあるか
 		if (Hit == 4)
 		{
 			gPosition = gaExpect[0] + gaExpect[1] + gaExpect[2] + gaExpect[3];
 		}
 		return STATUS_FIND_NUMBER_END;
 	}
-	// �������Ȃ���
+	// 履歴がないか
 	if (gIdxHistory >= gaHistory.length)
 	{
 		return gaExpect[4] + gaExpect[5] + gaExpect[6] + gaExpect[7];
@@ -1237,26 +1237,26 @@ function K_FindNumber()
 	Blow = gaHistory[gIdxHistory].charAt(14);
 	TotalM = Hit * 1 + Blow * 1;
 	gIdxHistory++;
-	// ��ޒT�����I�������
+	// 種類探索が終わったか
 	if (TotalM >= 4)
 	{
 		gNumber += gaExpect[4] + "";
 		gNumber += gaExpect[5] + "";
 		gNumber += gaExpect[6] + "";
 		gNumber += gaExpect[7] + "";
-		// �ʒu�q���g�����邩
+		// 位置ヒントもあるか
 		if (Hit == 4)
 		{
 			gPosition = gaExpect[4] + gaExpect[5] + gaExpect[6] + gaExpect[7];
 		}
 		return STATUS_FIND_NUMBER_END;
 	}
-	// �O���ŕ���
+	// 前部で分岐
 	switch (TotalF)
 	{
 		case 2:
 		{
-			// �����ɂ��邩
+			// 中部にあるか
 			if (TotalM != 0)
 			{
 				break;
@@ -1266,13 +1266,13 @@ function K_FindNumber()
 		}
 		case 3:
 		{
-			// �����ɂ��邩
+			// 中部にあるか
 			if (TotalM == 1)
 			{
 				break;
 			}
-			// �����ɂȂ��ꍇ�ɓ��B
-			// �������Ȃ���
+			// 中部にない場合に到達
+			// 履歴がないか
 			if (gIdxHistory >= gaHistory.length)
 			{
 				return gaExpect[4] + gaExpect[5] + gaExpect[6] + gaExpect[8];
@@ -1280,7 +1280,7 @@ function K_FindNumber()
 			Hit = gaHistory[gIdxHistory].charAt(8);
 			Blow = gaHistory[gIdxHistory].charAt(14);
 			gIdxHistory++;
-			// �ʒu�q���g�����邩
+			// 位置ヒントがあるか
 			if (Hit == 1)
 			{
 				gPosition = gPosition.charAt(0) + gPosition.charAt(1) + gPosition.charAt(2) + gaExpect[8];
@@ -1298,7 +1298,7 @@ function K_FindNumber()
 		}
 		case 0:
 		{
-			// �����ŕ���
+			// 中部で分岐
 			switch (TotalM)
 			{
 				case 2:
@@ -1308,7 +1308,7 @@ function K_FindNumber()
 				}
 				case 3:
 				{
-					// �������Ȃ���
+					// 履歴がないか
 					if (gIdxHistory >= gaHistory.length)
 					{
 						return gaExpect[0] + gaExpect[1] + gaExpect[2] + gaExpect[8];
@@ -1316,7 +1316,7 @@ function K_FindNumber()
 					Hit = gaHistory[gIdxHistory].charAt(8);
 					Blow = gaHistory[gIdxHistory].charAt(14);
 					gIdxHistory++;
-					// �ʒu�q���g�����邩
+					// 位置ヒントがあるか
 					if (Hit == 1)
 					{
 						gPosition = gPosition.charAt(0) + gPosition.charAt(1) + gPosition.charAt(2) + gaExpect[8];
@@ -1344,16 +1344,16 @@ function K_FindNumber()
 			break;
 		}
 	}
-	// �R���U���A�㕔�Ɋ܂܂�Ȃ��ꍇ�ɓ��B
-	// �㕔�Ɋ܂܂�Ȃ���
+	// ３分散か、後部に含まれない場合に到達
+	// 後部に含まれないか
 	if (TotalF + TotalM >= 4)
 	{
-		// �O���ŕ���
+		// 前部で分岐
 		switch (TotalF)
 		{
 			case 1:
 			{
-				// �������Ȃ���
+				// 履歴がないか
 				if (gIdxHistory >= gaHistory.length)
 				{
 					return gaExpect[8] + gaExpect[9] + gaExpect[0] + gaExpect[1];
@@ -1363,7 +1363,7 @@ function K_FindNumber()
 				Blow = gaHistory[gIdxHistory].charAt(14);
 				TotalA = Hit * 1 + Blow * 1;
 				gIdxHistory++;
-				// �������Ȃ���
+				// 履歴がないか
 				if (gIdxHistory >= gaHistory.length)
 				{
 					return gaExpect[8] + gaExpect[9] + gaExpect[0] + gaExpect[2];
@@ -1373,49 +1373,49 @@ function K_FindNumber()
 				Blow = gaHistory[gIdxHistory].charAt(14);
 				TotalB = Hit * 1 + Blow * 1;
 				gIdxHistory++;
-				// �ʒu�q���g�����邩
+				// 位置ヒントがあるか
 				if ((HitA == 1) && (HitB == 1))
 				{
 					gPosition = gPosition.charAt(0) + gPosition.charAt(1) + gaExpect[0] + gPosition.charAt(3);
 				}
-				// �ʒu�q���g�����邩
+				// 位置ヒントがあるか
 				if ((HitA == 1) && (HitB == 0))
 				{
 					gPosition = gPosition.charAt(0) + gPosition.charAt(1) + gPosition.charAt(2) + gaExpect[1];
 				}
-				// �ʒu�q���g�����邩
+				// 位置ヒントがあるか
 				if ((HitA == 0) && (HitB == 1))
 				{
 					gPosition = gPosition.charAt(0) + gPosition.charAt(1) + gPosition.charAt(2) + gaExpect[2];
 				}
-				// A���ɂ��邩
+				// A部にあるか
 				if (TotalA == 1)
 				{
-					// ����
-					// B���ɂ��邩
+					// ある
+					// B部にあるか
 					if (TotalB == 1)
 					{
-						// ����
+						// ある
 						Ret = K_CommonB(0, 4, 5, 6, 7);
 					}
 					else
 					{
-						// �Ȃ�
+						// ない
 						Ret = K_CommonB(1, 4, 5, 6, 7);
 					}
 				}
 				else
 				{
-					// �Ȃ�
-					// B���ɂ��邩
+					// ない
+					// B部にあるか
 					if (TotalB == 1)
 					{
-						// ����
+						// ある
 						Ret = K_CommonB(2, 4, 5, 6, 7);
 					}
 					else
 					{
-						// �Ȃ�
+						// ない
 						Ret = K_CommonB(3, 4, 5, 6, 7);
 					}
 				}
@@ -1423,7 +1423,7 @@ function K_FindNumber()
 			}
 			case 3:
 			{
-				// �������Ȃ���
+				// 履歴がないか
 				if (gIdxHistory >= gaHistory.length)
 				{
 					return gaExpect[8] + gaExpect[9] + gaExpect[4] + gaExpect[5];
@@ -1433,7 +1433,7 @@ function K_FindNumber()
 				Blow = gaHistory[gIdxHistory].charAt(14);
 				TotalA = Hit * 1 + Blow * 1;
 				gIdxHistory++;
-				// �������Ȃ���
+				// 履歴がないか
 				if (gIdxHistory >= gaHistory.length)
 				{
 					return gaExpect[8] + gaExpect[9] + gaExpect[4] + gaExpect[6];
@@ -1443,49 +1443,49 @@ function K_FindNumber()
 				Blow = gaHistory[gIdxHistory].charAt(14);
 				TotalB = Hit * 1 + Blow * 1;
 				gIdxHistory++;
-				// �ʒu�q���g�����邩
+				// 位置ヒントがあるか
 				if ((HitA == 1) && (HitB == 1))
 				{
 					gPosition = gPosition.charAt(0) + gPosition.charAt(1) + gaExpect[4] + gPosition.charAt(3);
 				}
-				// �ʒu�q���g�����邩
+				// 位置ヒントがあるか
 				if ((HitA == 1) && (HitB == 0))
 				{
 					gPosition = gPosition.charAt(0) + gPosition.charAt(1) + gPosition.charAt(2) + gaExpect[5];
 				}
-				// �ʒu�q���g�����邩
+				// 位置ヒントがあるか
 				if ((HitA == 0) && (HitB == 1))
 				{
 					gPosition = gPosition.charAt(0) + gPosition.charAt(1) + gPosition.charAt(2) + gaExpect[6];
 				}
-				// A���ɂ��邩
+				// A部にあるか
 				if (TotalA == 1)
 				{
-					// ����
-					// B���ɂ��邩
+					// ある
+					// B部にあるか
 					if (TotalB == 1)
 					{
-						// ����
+						// ある
 						Ret = K_CommonB(4, 0, 1, 2, 3);
 					}
 					else
 					{
-						// �Ȃ�
+						// ない
 						Ret = K_CommonB(5, 0, 1, 2, 3);
 					}
 				}
 				else
 				{
-					// �Ȃ�
-					// B���ɂ��邩
+					// ない
+					// B部にあるか
 					if (TotalB == 1)
 					{
-						// ����
+						// ある
 						Ret = K_CommonB(6, 0, 1, 2, 3);
 					}
 					else
 					{
-						// �Ȃ�
+						// ない
 						Ret = K_CommonB(7, 0, 1, 2, 3);
 					}
 				}
@@ -1496,8 +1496,8 @@ function K_FindNumber()
 				break;
 			}
 		}
-		// �O���ƒ����ɂQ���̏ꍇ�ɓ��B
-		// �������Ȃ���
+		// 前部と中部に２つずつの場合に到達
+		// 履歴がないか
 		if (gIdxHistory >= gaHistory.length)
 		{
 			return gaExpect[0] + gaExpect[1] + gaExpect[8] + gaExpect[9];
@@ -1506,7 +1506,7 @@ function K_FindNumber()
 		Blow = gaHistory[gIdxHistory].charAt(14);
 		TotalA = Hit * 1 + Blow * 1;
 		gIdxHistory++;
-		// A���ŕ���
+		// A部で分岐
 		switch (TotalA)
 		{
 			case 0:
@@ -1520,7 +1520,7 @@ function K_FindNumber()
 				gNumber += gaExpect[0] + "";
 				gNumber += gaExpect[1] + "";
 				break;
-				// �ʒu�q���g�����邩
+				// 位置ヒントもあるか
 				if (Hit == 2)
 				{
 					gPosition = gaExpect[0] + gaExpect[1] + gPosition.charAt(2) + gPosition.charAt(3);
@@ -1528,7 +1528,7 @@ function K_FindNumber()
 			}
 			default:
 			{
-				// �������Ȃ���
+				// 履歴がないか
 				if (gIdxHistory >= gaHistory.length)
 				{
 					return gaExpect[0] + gaExpect[1] + gaExpect[2] + gaExpect[9];
@@ -1537,18 +1537,18 @@ function K_FindNumber()
 				Blow = gaHistory[gIdxHistory].charAt(14);
 				TotalA = Hit * 1 + Blow * 1;
 				gIdxHistory++;
-				// A���ɂP��
+				// A部に１つか
 				if (TotalA == 1)
 				{
-					// �P�ł���
+					// １つである
 					gNumber += gaExpect[3] + "";
 				}
 				else
 				{
-					// �P�ł͂Ȃ�
+					// １つではない
 					gNumber += gaExpect[2] + "";
 				}
-				// �������Ȃ���
+				// 履歴がないか
 				if (gIdxHistory >= gaHistory.length)
 				{
 					return gaExpect[2] + gaExpect[3] + gaExpect[0] + gaExpect[9];
@@ -1557,21 +1557,21 @@ function K_FindNumber()
 				Blow = gaHistory[gIdxHistory].charAt(14);
 				TotalA = Hit * 1 + Blow * 1;
 				gIdxHistory++;
-				// A���ɂP��
+				// A部に１つか
 				if (TotalA == 1)
 				{
-					// �P�ł���
+					// １つである
 					gNumber += gaExpect[1] + "";
 				}
 				else
 				{
-					// �P�ł͂Ȃ�
+					// １つではない
 					gNumber += gaExpect[0] + "";
 				}
 				break;
 			}
 		}
-		// �������Ȃ���
+		// 履歴がないか
 		if (gIdxHistory >= gaHistory.length)
 		{
 			return gaExpect[4] + gaExpect[5] + gaExpect[8] + gaExpect[9];
@@ -1580,7 +1580,7 @@ function K_FindNumber()
 		Blow = gaHistory[gIdxHistory].charAt(14);
 		TotalA = Hit * 1 + Blow * 1;
 		gIdxHistory++;
-		// A���ŕ���
+		// A部で分岐
 		switch (TotalA)
 		{
 			case 0:
@@ -1594,7 +1594,7 @@ function K_FindNumber()
 				gNumber += gaExpect[4] + "";
 				gNumber += gaExpect[5] + "";
 				break;
-				// �ʒu�q���g�����邩
+				// 位置ヒントもあるか
 				if (Hit == 2)
 				{
 					gPosition = gaExpect[4] + gaExpect[5] + gPosition.charAt(2) + gPosition.charAt(3);
@@ -1602,7 +1602,7 @@ function K_FindNumber()
 			}
 			default:
 			{
-				// �������Ȃ���
+				// 履歴がないか
 				if (gIdxHistory >= gaHistory.length)
 				{
 					return gaExpect[4] + gaExpect[5] + gaExpect[6] + gaExpect[9];
@@ -1611,18 +1611,18 @@ function K_FindNumber()
 				Blow = gaHistory[gIdxHistory].charAt(14);
 				TotalA = Hit * 1 + Blow * 1;
 				gIdxHistory++;
-				// A���ɂP��
+				// A部に１つか
 				if (TotalA == 1)
 				{
-					// �P�ł���
+					// １つである
 					gNumber += gaExpect[7] + "";
 				}
 				else
 				{
-					// �P�ł͂Ȃ�
+					// １つではない
 					gNumber += gaExpect[6] + "";
 				}
-				// �������Ȃ���
+				// 履歴がないか
 				if (gIdxHistory >= gaHistory.length)
 				{
 					return gaExpect[6] + gaExpect[7] + gaExpect[4] + gaExpect[9];
@@ -1631,15 +1631,15 @@ function K_FindNumber()
 				Blow = gaHistory[gIdxHistory].charAt(14);
 				TotalA = Hit * 1 + Blow * 1;
 				gIdxHistory++;
-				// A���ɂP��
+				// A部に１つか
 				if (TotalA == 1)
 				{
-					// �P�ł���
+					// １つである
 					gNumber += gaExpect[5] + "";
 				}
 				else
 				{
-					// �P�ł͂Ȃ�
+					// １つではない
 					gNumber += gaExpect[4] + "";
 				}
 				break;
@@ -1647,11 +1647,11 @@ function K_FindNumber()
 		}
 		return STATUS_FIND_NUMBER_END;
 	}
-	// �R���U�̏ꍇ�ɓ��B
-	// �O���ɂQ��
+	// ３分散の場合に到達
+	// 前部に２つか
 	if (TotalF == 2)
 	{
-		// �������Ȃ���
+		// 履歴がないか
 		if (gIdxHistory >= gaHistory.length)
 		{
 			return gaExpect[0] + gaExpect[1] + gaExpect[8] + gaExpect[9];
@@ -1660,14 +1660,14 @@ function K_FindNumber()
 		Blow = gaHistory[gIdxHistory].charAt(14);
 		TotalA = Hit * 1 + Blow * 1;
 		gIdxHistory++;
-		// A���ŕ���
+		// A部で分岐
 		switch (TotalA)
 		{
 			case 1:
 			{
 				gNumber += gaExpect[2] + "";
 				gNumber += gaExpect[3] + "";
-				// �������Ȃ���
+				// 履歴がないか
 				if (gIdxHistory >= gaHistory.length)
 				{
 					return gaExpect[2] + gaExpect[3] + gaExpect[0] + gaExpect[8];
@@ -1676,11 +1676,11 @@ function K_FindNumber()
 				Blow = gaHistory[gIdxHistory].charAt(14);
 				TotalA = Hit * 1 + Blow * 1;
 				gIdxHistory++;
-				// A���ɂR��
+				// A部に３つか
 				if (TotalA == 3)
 				{
 					gNumber += gaExpect[8] + "";
-					// �ʒu�q���g�����邩
+					// 位置ヒントもあるか
 					if (Hit == 3)
 					{
 						gPosition = gaExpect[2] + gaExpect[3] + gPosition.charAt(2) + gaExpect[8];
@@ -1698,12 +1698,12 @@ function K_FindNumber()
 			{
 				gNumber += gaExpect[0] + "";
 				gNumber += gaExpect[1] + "";
-				// �ʒu�q���g�����邩
+				// 位置ヒントもあるか
 				if (Hit == 3)
 				{
 					gPosition = gaExpect[0] + gaExpect[1] + gPosition.charAt(2) + gPosition.charAt(3);
 				}
-				// �������Ȃ���
+				// 履歴がないか
 				if (gIdxHistory >= gaHistory.length)
 				{
 					return gaExpect[0] + gaExpect[1] + gaExpect[2] + gaExpect[8];
@@ -1712,11 +1712,11 @@ function K_FindNumber()
 				Blow = gaHistory[gIdxHistory].charAt(14);
 				TotalA = Hit * 1 + Blow * 1;
 				gIdxHistory++;
-				// A���ɂR��
+				// A部に３つか
 				if (TotalA == 3)
 				{
 					gNumber += gaExpect[8] + "";
-					// �ʒu�q���g�����邩
+					// 位置ヒントもあるか
 					if (Hit == 3)
 					{
 						gPosition = gPosition.charAt(0) + gPosition.charAt(1) + gPosition.charAt(2) + gaExpect[8];
@@ -1732,7 +1732,7 @@ function K_FindNumber()
 			}
 			default:
 			{
-				// �������Ȃ���
+				// 履歴がないか
 				if (gIdxHistory >= gaHistory.length)
 				{
 					return gaExpect[0] + gaExpect[2] + gaExpect[8] + gaExpect[9];
@@ -1741,14 +1741,14 @@ function K_FindNumber()
 				Blow = gaHistory[gIdxHistory].charAt(14);
 				TotalA = Hit * 1 + Blow * 1;
 				gIdxHistory++;
-				// A���ŕ���
+				// A部で分岐
 				switch (TotalA)
 				{
 					case 1:
 					{
 						gNumber += gaExpect[1] + "";
 						gNumber += gaExpect[3] + "";
-						// �������Ȃ���
+						// 履歴がないか
 						if (gIdxHistory >= gaHistory.length)
 						{
 							return gaExpect[1] + gaExpect[3] + gaExpect[0] + gaExpect[8];
@@ -1757,11 +1757,11 @@ function K_FindNumber()
 						Blow = gaHistory[gIdxHistory].charAt(14);
 						TotalA = Hit * 1 + Blow * 1;
 						gIdxHistory++;
-						// A���ɂR��
+						// A部に３つか
 						if (TotalA == 3)
 						{
 							gNumber += gaExpect[8] + "";
-							// �ʒu�q���g�����邩
+							// 位置ヒントもあるか
 							if (Hit == 3)
 							{
 								gPosition = gaExpect[1] + gaExpect[3] + gPosition.charAt(2) + gaExpect[8];
@@ -1779,12 +1779,12 @@ function K_FindNumber()
 					{
 						gNumber += gaExpect[0] + "";
 						gNumber += gaExpect[2] + "";
-						// �ʒu�q���g�����邩
+						// 位置ヒントもあるか
 						if (Hit == 3)
 						{
 							gPosition = gaExpect[0] + gaExpect[2] + gPosition.charAt(2) + gPosition.charAt(3);
 						}
-						// �������Ȃ���
+						// 履歴がないか
 						if (gIdxHistory >= gaHistory.length)
 						{
 							return gaExpect[0] + gaExpect[2] + gaExpect[1] + gaExpect[8];
@@ -1793,11 +1793,11 @@ function K_FindNumber()
 						Blow = gaHistory[gIdxHistory].charAt(14);
 						TotalA = Hit * 1 + Blow * 1;
 						gIdxHistory++;
-						// A���ɂR��
+						// A部に３つか
 						if (TotalA == 3)
 						{
 							gNumber += gaExpect[8] + "";
-							// �ʒu�q���g�����邩
+							// 位置ヒントもあるか
 							if (Hit == 3)
 							{
 								gPosition = gPosition.charAt(0) + gPosition.charAt(1) + gPosition.charAt(2) + gaExpect[8];
@@ -1813,7 +1813,7 @@ function K_FindNumber()
 					}
 					default:
 					{
-						// �������Ȃ���
+						// 履歴がないか
 						if (gIdxHistory >= gaHistory.length)
 						{
 							return gaExpect[0] + gaExpect[3] + gaExpect[8] + gaExpect[9];
@@ -1822,14 +1822,14 @@ function K_FindNumber()
 						Blow = gaHistory[gIdxHistory].charAt(14);
 						TotalA = Hit * 1 + Blow * 1;
 						gIdxHistory++;
-						// A���ŕ���
+						// A部で分岐
 						switch (TotalA)
 						{
 							case 1:
 							{
 								gNumber += gaExpect[1] + "";
 								gNumber += gaExpect[2] + "";
-								// �������Ȃ���
+								// 履歴がないか
 								if (gIdxHistory >= gaHistory.length)
 								{
 									return gaExpect[1] + gaExpect[2] + gaExpect[0] + gaExpect[8];
@@ -1838,11 +1838,11 @@ function K_FindNumber()
 								Blow = gaHistory[gIdxHistory].charAt(14);
 								TotalA = Hit * 1 + Blow * 1;
 								gIdxHistory++;
-								// A���ɂR��
+								// A部に３つか
 								if (TotalA == 3)
 								{
 									gNumber += gaExpect[8] + "";
-									// �ʒu�q���g�����邩
+									// 位置ヒントもあるか
 									if (Hit == 3)
 									{
 										gPosition = gaExpect[1] + gaExpect[2] + gPosition.charAt(2) + gaExpect[8];
@@ -1860,12 +1860,12 @@ function K_FindNumber()
 							{
 								gNumber += gaExpect[0] + "";
 								gNumber += gaExpect[3] + "";
-								// �ʒu�q���g�����邩
+								// 位置ヒントもあるか
 								if (Hit == 3)
 								{
 									gPosition = gaExpect[0] + gaExpect[3] + gPosition.charAt(2) + gPosition.charAt(3);
 								}
-								// �������Ȃ���
+								// 履歴がないか
 								if (gIdxHistory >= gaHistory.length)
 								{
 									return gaExpect[0] + gaExpect[3] + gaExpect[0] + gaExpect[8];
@@ -1874,11 +1874,11 @@ function K_FindNumber()
 								Blow = gaHistory[gIdxHistory].charAt(14);
 								TotalA = Hit * 1 + Blow * 1;
 								gIdxHistory++;
-								// A���ɂR��
+								// A部に３つか
 								if (TotalA == 3)
 								{
 									gNumber += gaExpect[8] + "";
-									// �ʒu�q���g�����邩
+									// 位置ヒントもあるか
 									if (Hit == 3)
 									{
 										gPosition = gPosition.charAt(0) + gPosition.charAt(1) + gPosition.charAt(2) + gaExpect[8];
@@ -1905,11 +1905,11 @@ function K_FindNumber()
 		}
 		return Ret;
 	}
-	// �R���U�ŁA�O���ɂQ�ł͂Ȃ��ꍇ�ɓ��B
-	// �����ɂQ��
+	// ３分散で、前部に２つではない場合に到達
+	// 中部に２つか
 	if (TotalM == 2)
 	{
-		// �������Ȃ���
+		// 履歴がないか
 		if (gIdxHistory >= gaHistory.length)
 		{
 			return gaExpect[4] + gaExpect[5] + gaExpect[8] + gaExpect[9];
@@ -1918,14 +1918,14 @@ function K_FindNumber()
 		Blow = gaHistory[gIdxHistory].charAt(14);
 		TotalA = Hit * 1 + Blow * 1;
 		gIdxHistory++;
-		// A���ŕ���
+		// A部で分岐
 		switch (TotalA)
 		{
 			case 1:
 			{
 				gNumber += gaExpect[6] + "";
 				gNumber += gaExpect[7] + "";
-				// �������Ȃ���
+				// 履歴がないか
 				if (gIdxHistory >= gaHistory.length)
 				{
 					return gaExpect[6] + gaExpect[7] + gaExpect[4] + gaExpect[8];
@@ -1934,11 +1934,11 @@ function K_FindNumber()
 				Blow = gaHistory[gIdxHistory].charAt(14);
 				TotalA = Hit * 1 + Blow * 1;
 				gIdxHistory++;
-				// A���ɂR��
+				// A部に３つか
 				if (TotalA == 3)
 				{
 					gNumber += gaExpect[8] + "";
-					// �ʒu�q���g�����邩
+					// 位置ヒントもあるか
 					if (Hit == 3)
 					{
 						gPosition = gaExpect[6] + gaExpect[7] + gPosition.charAt(2) + gaExpect[8];
@@ -1956,12 +1956,12 @@ function K_FindNumber()
 			{
 				gNumber += gaExpect[4] + "";
 				gNumber += gaExpect[5] + "";
-				// �ʒu�q���g�����邩
+				// 位置ヒントもあるか
 				if (Hit == 3)
 				{
 					gPosition = gaExpect[4] + gaExpect[5] + gPosition.charAt(2) + gPosition.charAt(3);
 				}
-				// �������Ȃ���
+				// 履歴がないか
 				if (gIdxHistory >= gaHistory.length)
 				{
 					return gaExpect[4] + gaExpect[5] + gaExpect[6] + gaExpect[8];
@@ -1970,11 +1970,11 @@ function K_FindNumber()
 				Blow = gaHistory[gIdxHistory].charAt(14);
 				TotalA = Hit * 1 + Blow * 1;
 				gIdxHistory++;
-				// A���ɂR��
+				// A部に３つか
 				if (TotalA == 3)
 				{
 					gNumber += gaExpect[8] + "";
-					// �ʒu�q���g�����邩
+					// 位置ヒントもあるか
 					if (Hit == 3)
 					{
 						gPosition = gPosition.charAt(0) + gPosition.charAt(1) + gPosition.charAt(2) + gaExpect[8];
@@ -1990,7 +1990,7 @@ function K_FindNumber()
 			}
 			default:
 			{
-				// �������Ȃ���
+				// 履歴がないか
 				if (gIdxHistory >= gaHistory.length)
 				{
 					return gaExpect[4] + gaExpect[6] + gaExpect[8] + gaExpect[9];
@@ -1999,14 +1999,14 @@ function K_FindNumber()
 				Blow = gaHistory[gIdxHistory].charAt(14);
 				TotalA = Hit * 1 + Blow * 1;
 				gIdxHistory++;
-				// A���ŕ���
+				// A部で分岐
 				switch (TotalA)
 				{
 					case 1:
 					{
 						gNumber += gaExpect[5] + "";
 						gNumber += gaExpect[7] + "";
-						// �������Ȃ���
+						// 履歴がないか
 						if (gIdxHistory >= gaHistory.length)
 						{
 							return gaExpect[5] + gaExpect[7] + gaExpect[4] + gaExpect[8];
@@ -2015,11 +2015,11 @@ function K_FindNumber()
 						Blow = gaHistory[gIdxHistory].charAt(14);
 						TotalA = Hit * 1 + Blow * 1;
 						gIdxHistory++;
-						// A���ɂR��
+						// A部に３つか
 						if (TotalA == 3)
 						{
 							gNumber += gaExpect[8] + "";
-							// �ʒu�q���g�����邩
+							// 位置ヒントもあるか
 							if (Hit == 3)
 							{
 								gPosition = gaExpect[5] + gaExpect[7] + gPosition.charAt(2) + gaExpect[8];
@@ -2037,12 +2037,12 @@ function K_FindNumber()
 					{
 						gNumber += gaExpect[4] + "";
 						gNumber += gaExpect[6] + "";
-						// �ʒu�q���g�����邩
+						// 位置ヒントもあるか
 						if (Hit == 3)
 						{
 							gPosition = gaExpect[4] + gaExpect[6] + gPosition.charAt(2) + gPosition.charAt(3);
 						}
-						// �������Ȃ���
+						// 履歴がないか
 						if (gIdxHistory >= gaHistory.length)
 						{
 							return gaExpect[4] + gaExpect[6] + gaExpect[5] + gaExpect[8];
@@ -2051,11 +2051,11 @@ function K_FindNumber()
 						Blow = gaHistory[gIdxHistory].charAt(14);
 						TotalA = Hit * 1 + Blow * 1;
 						gIdxHistory++;
-						// A���ɂR��
+						// A部に３つか
 						if (TotalA == 3)
 						{
 							gNumber += gaExpect[8] + "";
-							// �ʒu�q���g�����邩
+							// 位置ヒントもあるか
 							if (Hit == 3)
 							{
 								gPosition = gPosition.charAt(0) + gPosition.charAt(1) + gPosition.charAt(2) + gaExpect[8];
@@ -2071,7 +2071,7 @@ function K_FindNumber()
 					}
 					default:
 					{
-						// �������Ȃ���
+						// 履歴がないか
 						if (gIdxHistory >= gaHistory.length)
 						{
 							return gaExpect[4] + gaExpect[7] + gaExpect[8] + gaExpect[9];
@@ -2080,14 +2080,14 @@ function K_FindNumber()
 						Blow = gaHistory[gIdxHistory].charAt(14);
 						TotalA = Hit * 1 + Blow * 1;
 						gIdxHistory++;
-						// A���ŕ���
+						// A部で分岐
 						switch (TotalA)
 						{
 							case 1:
 							{
 								gNumber += gaExpect[5] + "";
 								gNumber += gaExpect[6] + "";
-								// �������Ȃ���
+								// 履歴がないか
 								if (gIdxHistory >= gaHistory.length)
 								{
 									return gaExpect[5] + gaExpect[6] + gaExpect[4] + gaExpect[8];
@@ -2096,11 +2096,11 @@ function K_FindNumber()
 								Blow = gaHistory[gIdxHistory].charAt(14);
 								TotalA = Hit * 1 + Blow * 1;
 								gIdxHistory++;
-								// A���ɂR��
+								// A部に３つか
 								if (TotalA == 3)
 								{
 									gNumber += gaExpect[8] + "";
-									// �ʒu�q���g�����邩
+									// 位置ヒントもあるか
 									if (Hit == 3)
 									{
 										gPosition = gaExpect[5] + gaExpect[6] + gPosition.charAt(2) + gaExpect[8];
@@ -2118,12 +2118,12 @@ function K_FindNumber()
 							{
 								gNumber += gaExpect[4] + "";
 								gNumber += gaExpect[7] + "";
-								// �ʒu�q���g�����邩
+								// 位置ヒントもあるか
 								if (Hit == 3)
 								{
 									gPosition = gaExpect[4] + gaExpect[7] + gPosition.charAt(2) + gPosition.charAt(3);
 								}
-								// �������Ȃ���
+								// 履歴がないか
 								if (gIdxHistory >= gaHistory.length)
 								{
 									return gaExpect[4] + gaExpect[7] + gaExpect[5] + gaExpect[8];
@@ -2132,11 +2132,11 @@ function K_FindNumber()
 								Blow = gaHistory[gIdxHistory].charAt(14);
 								TotalA = Hit * 1 + Blow * 1;
 								gIdxHistory++;
-								// A���ɂR��
+								// A部に３つか
 								if (TotalA == 3)
 								{
 									gNumber += gaExpect[8] + "";
-									// �ʒu�q���g�����邩
+									// 位置ヒントもあるか
 									if (Hit == 3)
 									{
 										gPosition = gPosition.charAt(0) + gPosition.charAt(1) + gPosition.charAt(2) + gaExpect[8];
@@ -2163,17 +2163,17 @@ function K_FindNumber()
 		}
 		return Ret;
 	}
-	// �R���U�ŁA�㕔�ɂQ�̏ꍇ�ɓ��B
+	// ３分散で、後部に２つの場合に到達
 	gNumber += gaExpect[8] + "";
 	gNumber += gaExpect[9] + "";
 	Ret = K_CommonD(8, 9, 0, 1, 2, 3);
-	// �񓚂����炤��
+	// 回答をもらうか
 	if (Ret != STATUS_FIND_NUMBER_CONTINUE)
 	{
 		return Ret;
 	}
 	Ret = K_CommonD(8, 9, 4, 5, 6, 7);
-	// �񓚂����炤��
+	// 回答をもらうか
 	if (Ret != STATUS_FIND_NUMBER_CONTINUE)
 	{
 		return Ret;
@@ -2181,7 +2181,7 @@ function K_FindNumber()
 	return STATUS_FIND_NUMBER_END;
 }
 
-// ���ʕ�D�i�K�v�Q�A�s���S���K�v�P�j
+// 共通部D（必要２つ、不明４つ→必要１つ）
 function K_CommonD(idxGood1, idxGood2, idx1, idx2, idx3, idx4)
 {
 	var TotalA;
@@ -2189,7 +2189,7 @@ function K_CommonD(idxGood1, idxGood2, idx1, idx2, idx3, idx4)
 	var Hit;
 	var Blow;
 
-	// �������Ȃ���
+	// 履歴がないか
 	if (gIdxHistory >= gaHistory.length)
 	{
 		return gaExpect[idxGood1] + gaExpect[idxGood2] + gaExpect[idx1] + gaExpect[idx2];
@@ -2198,12 +2198,12 @@ function K_CommonD(idxGood1, idxGood2, idx1, idx2, idx3, idx4)
 	Blow = gaHistory[gIdxHistory].charAt(14);
 	TotalA = Hit * 1 + Blow * 1;
 	gIdxHistory++;
-	// �ʒu�q���g�����邩
+	// 位置ヒントもあるか
 	if (Hit == 3)
 	{
 		gPosition = gaExpect[idxGood1] + gaExpect[idxGood2] + gPosition.charAt(2) + gPosition.charAt(3);
 	}
-	// �������Ȃ���
+	// 履歴がないか
 	if (gIdxHistory >= gaHistory.length)
 	{
 		return gaExpect[idxGood1] + gaExpect[idxGood2] + gaExpect[idx1] + gaExpect[idx3];
@@ -2212,15 +2212,15 @@ function K_CommonD(idxGood1, idxGood2, idx1, idx2, idx3, idx4)
 	Blow = gaHistory[gIdxHistory].charAt(14);
 	TotalB = Hit * 1 + Blow * 1;
 	gIdxHistory++;
-	// �ʒu�q���g�����邩
+	// 位置ヒントもあるか
 	if (Hit == 3)
 	{
 		gPosition = gaExpect[idxGood1] + gaExpect[idxGood2] + gPosition.charAt(2) + gPosition.charAt(3);
 	}
-	// A���ɂR��
+	// A部に３つか
 	if (TotalA == 3)
 	{
-		// B���ɂR��
+		// B部に３つか
 		if (TotalB == 3)
 		{
 			gNumber += gaExpect[idx1] + "";
@@ -2232,7 +2232,7 @@ function K_CommonD(idxGood1, idxGood2, idx1, idx2, idx3, idx4)
 	}
 	else
 	{
-		// B���ɂR��
+		// B部に３つか
 		if (TotalB == 3)
 		{
 			gNumber += gaExpect[idx3] + "";
@@ -2245,14 +2245,14 @@ function K_CommonD(idxGood1, idxGood2, idx1, idx2, idx3, idx4)
 	return STATUS_FIND_NUMBER_CONTINUE;
 }
 
-// ���ʕ�C�i�K�v�R�A�s���S���K�v�P�j
+// 共通部C（必要３つ、不明４つ→必要１つ）
 function K_CommonC(idxGood1, idxGood2, idxGood3, idx1, idx2, idx3, idx4)
 {
 	var TotalA;
 	var Hit;
 	var Blow;
 
-	// �������Ȃ���
+	// 履歴がないか
 	if (gIdxHistory >= gaHistory.length)
 	{
 		return gaExpect[idxGood1] + gaExpect[idxGood2] + gaExpect[idxGood3] + gaExpect[idx1];
@@ -2261,13 +2261,13 @@ function K_CommonC(idxGood1, idxGood2, idxGood3, idx1, idx2, idx3, idx4)
 	Blow = gaHistory[gIdxHistory].charAt(14);
 	TotalA = Hit * 1 + Blow * 1;
 	gIdxHistory++;
-	// A���ɂS��
+	// A部に４つか
 	if (TotalA == 4)
 	{
 		gNumber += gaExpect[idx1] + "";
 		return STATUS_FIND_NUMBER_END;
 	}
-	// �������Ȃ���
+	// 履歴がないか
 	if (gIdxHistory >= gaHistory.length)
 	{
 		return gaExpect[idxGood1] + gaExpect[idxGood2] + gaExpect[idxGood3] + gaExpect[idx2];
@@ -2276,13 +2276,13 @@ function K_CommonC(idxGood1, idxGood2, idxGood3, idx1, idx2, idx3, idx4)
 	Blow = gaHistory[gIdxHistory].charAt(14);
 	TotalA = Hit * 1 + Blow * 1;
 	gIdxHistory++;
-	// A���ɂS��
+	// A部に４つか
 	if (TotalA == 4)
 	{
 		gNumber += gaExpect[idx2] + "";
 		return STATUS_FIND_NUMBER_END;
 	}
-	// �������Ȃ���
+	// 履歴がないか
 	if (gIdxHistory >= gaHistory.length)
 	{
 		return gaExpect[idxGood1] + gaExpect[idxGood2] + gaExpect[idxGood3] + gaExpect[idx3];
@@ -2291,7 +2291,7 @@ function K_CommonC(idxGood1, idxGood2, idxGood3, idx1, idx2, idx3, idx4)
 	Blow = gaHistory[gIdxHistory].charAt(14);
 	TotalA = Hit * 1 + Blow * 1;
 	gIdxHistory++;
-	// A���ɂS��
+	// A部に４つか
 	if (TotalA == 4)
 	{
 		gNumber += gaExpect[idx3] + "";
@@ -2303,12 +2303,12 @@ function K_CommonC(idxGood1, idxGood2, idxGood3, idx1, idx2, idx3, idx4)
 	return STATUS_FIND_NUMBER_END;
 }
 
-// ���ʕ�A�i�s�v�P�A�s���S���K�v�P�j���O������F�W�A�X�K�v
+// 共通部A（不要１つ、不明４つ→必要１つ）※前提条件：８、９必要
 function K_CommonA(idxBad, idx1, idx2, idx3, idx4)
 {
 	gNumber += gaExpect[8] + "";
 	gNumber += gaExpect[9] + "";
-	// �������Ȃ���
+	// 履歴がないか
 	if (gIdxHistory >= gaHistory.length)
 	{
 		return gaExpect[8] + gaExpect[9] + gaExpect[idxBad] + gaExpect[idx1];
@@ -2320,12 +2320,12 @@ function K_CommonA(idxBad, idx1, idx2, idx3, idx4)
 	if (Hit * 1 + Blow * 1 == 3)
 	{
 		gNumber += gaExpect[idx1] + "";
-		// �ʒu�q���g�����邩
+		// 位置ヒントもあるか
 		if (Hit == 3)
 		{
 			gPosition = gaExpect[8] + gaExpect[9] + gPosition.charAt(2) + gaExpect[idx1];
 		}
-		// �������Ȃ���
+		// 履歴がないか
 		if (gIdxHistory >= gaHistory.length)
 		{
 			return gaExpect[8] + gaExpect[9] + gaExpect[idx2] + gaExpect[idxBad];
@@ -2337,7 +2337,7 @@ function K_CommonA(idxBad, idx1, idx2, idx3, idx4)
 		if (Hit * 1 + Blow * 1 == 3)
 		{
 			gNumber += gaExpect[idx2] + "";
-			// �ʒu�q���g�����邩
+			// 位置ヒントもあるか
 			if (Hit == 3)
 			{
 				gPosition = gaExpect[8] + gaExpect[9] + gaExpect[idx2] + gPosition.charAt(3);
@@ -2345,7 +2345,7 @@ function K_CommonA(idxBad, idx1, idx2, idx3, idx4)
 		}
 		else
 		{
-			// �������Ȃ���
+			// 履歴がないか
 			if (gIdxHistory >= gaHistory.length)
 			{
 				return gaExpect[8] + gaExpect[9] + gaExpect[idx3] + gaExpect[idxBad];
@@ -2357,7 +2357,7 @@ function K_CommonA(idxBad, idx1, idx2, idx3, idx4)
 			if (Hit * 1 + Blow * 1 == 3)
 			{
 				gNumber += gaExpect[idx3] + "";
-				// �ʒu�q���g�����邩
+				// 位置ヒントもあるか
 				if (Hit == 3)
 				{
 					gPosition = gaExpect[8] + gaExpect[9] + gaExpect[idx3] + gPosition.charAt(3);
@@ -2371,7 +2371,7 @@ function K_CommonA(idxBad, idx1, idx2, idx3, idx4)
 	}
 	else
 	{
-		// �������Ȃ���
+		// 履歴がないか
 		if (gIdxHistory >= gaHistory.length)
 		{
 			return gaExpect[8] + gaExpect[9] + gaExpect[idxBad] + gaExpect[idx2];
@@ -2383,12 +2383,12 @@ function K_CommonA(idxBad, idx1, idx2, idx3, idx4)
 		if (Hit * 1 + Blow * 1 == 3)
 		{
 			gNumber += gaExpect[idx2] + "";
-			// �ʒu�q���g�����邩
+			// 位置ヒントもあるか
 			if (Hit == 3)
 			{
 				gPosition = gaExpect[8] + gaExpect[9] + gPosition.charAt(2) + gaExpect[idx2];
 			}
-			// �������Ȃ���
+			// 履歴がないか
 			if (gIdxHistory >= gaHistory.length)
 			{
 				return gaExpect[8] + gaExpect[9] + gaExpect[idx3] + gaExpect[idxBad];
@@ -2400,7 +2400,7 @@ function K_CommonA(idxBad, idx1, idx2, idx3, idx4)
 			if (Hit * 1 + Blow * 1 == 3)
 			{
 				gNumber += gaExpect[idx3] + "";
-				// �ʒu�q���g�����邩
+				// 位置ヒントもあるか
 				if (Hit == 3)
 				{
 					gPosition = gaExpect[8] + gaExpect[9] + gaExpect[idx3] + gPosition.charAt(3);
@@ -2420,11 +2420,11 @@ function K_CommonA(idxBad, idx1, idx2, idx3, idx4)
 	return STATUS_FIND_NUMBER_END;
 }
 
-// ���ʕ�B�i�K�v�P�A�s���S���K�v�R�j
+// 共通部B（必要１つ、不明４つ→必要３つ）
 function K_CommonB(idxGood, idx1, idx2, idx3, idx4)
 {
 	gNumber += gaExpect[idxGood] + "";
-	// �������Ȃ���
+	// 履歴がないか
 	if (gIdxHistory >= gaHistory.length)
 	{
 		return gaExpect[idx1] + gaExpect[idx2] + gaExpect[idx3] + gaExpect[idxGood];
@@ -2438,7 +2438,7 @@ function K_CommonB(idxGood, idx1, idx2, idx3, idx4)
 		gNumber += gaExpect[idx1] + "";
 		gNumber += gaExpect[idx2] + "";
 		gNumber += gaExpect[idx3] + "";
-		// �ʒu�q���g�����邩
+		// 位置ヒントもあるか
 		if (Hit == 4)
 		{
 			gPosition = gaExpect[idx1] + gaExpect[idx2] + gaExpect[idx3] + gaExpect[idxGood];
@@ -2446,7 +2446,7 @@ function K_CommonB(idxGood, idx1, idx2, idx3, idx4)
 	}
 	else
 	{
-		// �������Ȃ���
+		// 履歴がないか
 		if (gIdxHistory >= gaHistory.length)
 		{
 			return gaExpect[idx1] + gaExpect[idx2] + gaExpect[idxGood] + gaExpect[idx4];
@@ -2460,7 +2460,7 @@ function K_CommonB(idxGood, idx1, idx2, idx3, idx4)
 			gNumber += gaExpect[idx1] + "";
 			gNumber += gaExpect[idx2] + "";
 			gNumber += gaExpect[idx4] + "";
-			// �ʒu�q���g�����邩
+			// 位置ヒントもあるか
 			if (Hit == 4)
 			{
 				gPosition = gaExpect[idx1] + gaExpect[idx2] + gaExpect[idxGood] + gaExpect[idx4];
@@ -2468,7 +2468,7 @@ function K_CommonB(idxGood, idx1, idx2, idx3, idx4)
 		}
 		else
 		{
-			// �������Ȃ���
+			// 履歴がないか
 			if (gIdxHistory >= gaHistory.length)
 			{
 				return gaExpect[idx1] + gaExpect[idxGood] + gaExpect[idx3] + gaExpect[idx4];
@@ -2482,7 +2482,7 @@ function K_CommonB(idxGood, idx1, idx2, idx3, idx4)
 				gNumber += gaExpect[idx1] + "";
 				gNumber += gaExpect[idx3] + "";
 				gNumber += gaExpect[idx4] + "";
-				// �ʒu�q���g�����邩
+				// 位置ヒントもあるか
 				if (Hit == 4)
 				{
 					gPosition = gaExpect[idx1] + gaExpect[idxGood] + gaExpect[idx3] + gaExpect[idx4];
@@ -2499,7 +2499,7 @@ function K_CommonB(idxGood, idx1, idx2, idx3, idx4)
 	return STATUS_FIND_NUMBER_END;
 }
 
-// �v���C���̃q���g�̌���
+// プレイヤのヒントの検証
 function K_VerifyYouHint()
 {
 	var Question;
@@ -2511,23 +2511,23 @@ function K_VerifyYouHint()
 	
 	Ret = "GOOD";
 	Tmp = "";
-	// �������Ȃ���
+	// 履歴がないか
 	if (document.forms[0].pgm_try.value == "")
 	{
 		return;
 	}
-	// �v���C���̖�肪���͂���Ă��Ȃ���
+	// プレイヤの問題が入力されていないか
 	if (document.forms[0].you_q.value == "")
 	{
-		alert("�v���C���̏o�����͂��ĉ������B");
+		alert("プレイヤの出題を入力して下さい。");
 		return;
 	}
 	Question = document.forms[0].you_q.value.toUpperCase();
 	aTry = document.forms[0].pgm_try.value.split("\n");
-	// ���؃��[�v
+	// 検証ループ
 	for (Loop = 0; Loop < aTry.length; Loop++)
 	{
-		// �����s�ł͂Ȃ���
+		// 履歴行ではないか
 		if (aTry[Loop].length != 20)
 		{
 			continue;
@@ -2539,74 +2539,74 @@ function K_VerifyYouHint()
 			Ret = "BAD";
 		}
 	}
-	// �ԈႢ����������
+	// 間違いがあったか
 	if (Ret == "BAD")
 	{
-		alert("�C���f�b�N�X " + Tmp.substr(0, Tmp.length - 1) + " �ɊԈႢ������܂��B");
+		alert("インデックス " + Tmp.substr(0, Tmp.length - 1) + " に間違いがあります。");
 	}
 	return Ret;
 }
 </script>
 </head>
 <body>
-[����m�F]FireFox 3.6.23<br>
+[動作確認]FireFox 3.6.23<br>
 <br>
 <table>
 <tr>
 	<td>
 	<form>
-	<input type="button" value="���Q�[��" onClick="K_PlayNext()"><br>
+	<input type="button" value="次ゲーム" onClick="K_PlayNext()"><br>
 	<hr>
 	<table summary="">
 	<tr>
 	
-	<td>�v���O�����̗\�z</td>
+	<td>プログラムの予想</td>
 	<td><input type="text" name="pgm_expect" value="" size="5" readonly></td>
-	<td>��</td>
-	<td>���Ȃ��̃q���g<input type="text" name="you_hint_hit" value="" size="2">Hit�@<input type="text" name="you_hint_blow" value="" size="2">Blow</td>
+	<td>→</td>
+	<td>あなたのヒント<input type="text" name="you_hint_hit" value="" size="2">Hit　<input type="text" name="you_hint_blow" value="" size="2">Blow</td>
 	
 	</tr>
 	<tr>
 	
-	<td>���Ȃ��̗\�z</td>
+	<td>あなたの予想</td>
 	<td><input type="text" name="you_expect" value="" size="5"></td>
-	<td>��</td>
-	<td>�v���O�����̃q���g�͎��s�����ɕ\��<!-- <input type="text" name="pgm_hint_hit" value="" size="2" readonly>HIT�@<input type="text" name="pgm_hint_blow" value="" size="2" readonly>BLOW
+	<td>→</td>
+	<td>プログラムのヒントは試行履歴に表示<!-- <input type="text" name="pgm_hint_hit" value="" size="2" readonly>HIT　<input type="text" name="pgm_hint_blow" value="" size="2" readonly>BLOW
 	 --></td>
 	
 	</tr>
 	</table>
-	<input type="button" value="���̎��s��" onClick="K_Try()"><br>
+	<input type="button" value="次の試行へ" onClick="K_Try()"><br>
 	<br>
 	<table summary="">
-	<tr><td><b>�\�z��</b></td><td>�v���O����</td><td>���Ȃ�</td></tr>
-	<tr><td><b>���s����</b></td><td><textarea name="pgm_try" rows="20" readonly>1234 -> 1 HIT 2 BLOW</textarea></td><td><textarea name="you_try" rows="20" readonly></textarea></td></tr>
+	<tr><td><b>予想者</b></td><td>プログラム</td><td>あなた</td></tr>
+	<tr><td><b>試行履歴</b></td><td><textarea name="pgm_try" rows="20" readonly>1234 -> 1 HIT 2 BLOW</textarea></td><td><textarea name="you_try" rows="20" readonly></textarea></td></tr>
 	</table>
 	<hr>
-	���Ȃ��̏��s��<input type="text" name="win" value="0" size="3" readonly>��<input type="text" name="lose" value="0" size="3" readonly>��<input type="text" name="draw" value="0" size="3" readonly>��
-	<input type="button" value="���Z�b�g" onClick="K_PlayReset()"><br>
+	あなたの勝敗は<input type="text" name="win" value="0" size="3" readonly>勝<input type="text" name="lose" value="0" size="3" readonly>負<input type="text" name="draw" value="0" size="3" readonly>分
+	<input type="button" value="リセット" onClick="K_PlayReset()"><br>
 	<br>
-	���Ȃ��̏o��<input type="text" name="you_q" value="" size="5"><input type="button" value="�v���C���̃q���g�̌���" onClick="K_VerifyYouHint()"><br>
-	�v���O�����̏o��<input type="text" name="pgm_q" value="" size="5" readonly><br>
-	�v���O�����̗\�z�e�[�u��<input type="text" name="expect_table" value="">
+	あなたの出題<input type="text" name="you_q" value="" size="5"><input type="button" value="プレイヤのヒントの検証" onClick="K_VerifyYouHint()"><br>
+	プログラムの出題<input type="text" name="pgm_q" value="" size="5" readonly><br>
+	プログラムの予想テーブル<input type="text" name="expect_table" value="">
 	</form>
 	</td>
 	
 	<td valign="top">
-	�q���g�𗊂�ɂ��Đ����𓖂Ă�B<br>
-	�P�O�Q�[���ł��������z���邩�ȁH<br>
+	ヒントを頼りにして数字を当てる。<br>
+	１０ゲームでいくつ勝ち越せるかな？<br>
 	<br>
-	�y���[���z<br>
-	�E�����͂S���B�@��@�P�Q�R�A�P�Q�R�S�T�@���@�~<br>
-	�E�g�����͈ʒu�Ǝ�ނ���v���Ă�����̃q���g�A�a�������͎�ނ�������v���Ă�����̃q���g�B�@��@�o�肪�P�Q�R�S�ŗ\�z���P�R�S�T�@���@�P�g�����A�Q�a������<br>
-	�E�����́A�o��y�ї\�z���ɁA���������͎g�p�ł��Ȃ��B��@�P�Q�Q�R�@���@�~<br>
-	�E���͔͂��p�ŁB�@��@�P�@���@�~<br>
+	【ルール】<br>
+	・数字は４桁。　例　１２３、１２３４５　→　×<br>
+	・Ｈｉｔは位置と種類が一致している個数のヒント、Ｂｌｏｗは種類だけが一致している個数のヒント。　例　出題が１２３４で予想が１３４５　→　１Ｈｉｔ、２Ｂｌｏｗ<br>
+	・数字は、出題及び予想共に、同じ数字は使用できない。例　１２２３　→　×<br>
+	・入力は半角で。　例　１　→　×<br>
 	<br>
-	�y�g�����z<br>
-	�P�@���[���𖞂����S���̐����i���v���C���̏o��j���l���āu���Q�[���v�{�^���������B<br>
-	�Q�@�v���C���̃q���g�Ɨ\�z����͂��āu���̎��s�ցv�{�^���������B<br>
-	�R�@�v���O�����̃q���g�𗊂�ɁA�v���C�����v���O���������Ă�܂Ŏ菇�Q�̌J��Ԃ��B<br>
-	�S�@������������A�q���g�̌��؂��s�����߂ɉ����Ƀv���C���̏o�����͂��Ď菇�P�ցB
+	【使い方】<br>
+	１　ルールを満たす４桁の数字（＝プレイヤの出題）を考えて「次ゲーム」ボタンを押す。<br>
+	２　プレイヤのヒントと予想を入力して「次の試行へ」ボタンを押す。<br>
+	３　プログラムのヒントを頼りに、プレイヤかプログラムが当てるまで手順２の繰り返し。<br>
+	４　勝負がついたら、ヒントの検証を行うために下部にプレイヤの出題を入力して手順１へ。
 	</td>
 </tr>
 </table>
